@@ -23,6 +23,8 @@ node build-shared.mjs
 
 The current deployment uses ChatGPT Sites, Cloudflare D1 (`DB`), and Sites-provided authenticated identity headers. Editing is restricted server-side to Barkath and Sumukh's authorized TGA email addresses.
 
-This version is not yet Vercel-compatible. A Vercel migration must replace the D1 binding and Sites authentication with persistent storage and verified authentication. Never trust client-supplied identity headers on another hosting platform.
+Vercel now serves the dashboard via `node build-vercel.mjs` and the `public` output directory. `/api/partners` reads the live Sites board through a read-only server function; it does not copy the seed or overwrite saved records. Edit and Add buttons open the existing authenticated Sites editor in a new tab. Return to Vercel and click Refresh board (or wait for the 20-second refresh) to view saved changes.
+
+This is a staged migration: storage and editor authentication still depend on Sites. Do not delete the Sites project. Moving editing fully onto Vercel requires a replacement durable database and verified login. No client-supplied identity headers are trusted by the Vercel functions, and writes through the read-only proxy are rejected.
 
 Partner data in `web/data.json` is the original seed; current shared records reside in the hosted database. Export current records before migrating hosts. No live Google Sheets synchronization is configured.

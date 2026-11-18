@@ -53,12 +53,23 @@ async function init(){
  $('auth-status').textContent=user.email?(canEdit?'Editor: ':'Viewing as ')+user.email:'Sign in to edit shared partners';
  $('signin').textContent=user.email?'Switch account':'Sign in to edit';
  $('signin').href=user.email?'/signout-with-chatgpt?return_to=%2F':'/signin-with-chatgpt?return_to=%2F';
- await refreshBoard();$('add').disabled=!canEdit;$('import').disabled=!canEdit;
+ const externalEditor=window.PARTNER_EDITOR_URL;
+ if(externalEditor){
+  canEdit=false;
+  $('auth-status').textContent='Shared records · edits open in a separate tab';
+  $('signin').textContent='Open shared editor';$('signin').href=externalEditor;
+  $('signin').target='_blank';$('signin').rel='noopener';
+  $('open-editor').onclick=()=>window.open(externalEditor,'_blank','noopener');
+  $('add').onclick=()=>window.open(externalEditor,'_blank','noopener');
+  $('add').textContent='+ Add partner in editor';
+  $('import').closest('label').hidden=true;
+ }
+ await refreshBoard();$('add').disabled=externalEditor?false:!canEdit;$('import').disabled=!canEdit;
  let old;try{old=JSON.parse(localStorage.getItem(key));}catch{}
  $('local-backup').hidden=!Array.isArray(old);
  $('local-backup').onclick=()=>{const current=partners;partners=old;try{$('export').click();}finally{partners=current;}};
  $('refresh-board').onclick=async()=>{if(dirty&&!confirm('Discard the unsaved draft and load the latest shared board? Export CSV first if you want to keep it.'))return;try{await refreshBoard();}catch(e){toast(e.message);}};
- $('open-editor').onclick=()=>{if(!canEdit){location.href=$('signin').href;return;}setView('directory');$('search').focus();toast('Choose a partner to edit, or select Add partner.');};
+ if(!externalEditor)$('open-editor').onclick=()=>{if(!canEdit){location.href=$('signin').href;return;}setView('directory');$('search').focus();toast('Choose a partner to edit, or select Add partner.');};
  setInterval(async()=>{if(saving||dirty||$('editor').open||document.hidden)return;try{await refreshBoard();}catch{$('save-status').textContent='Connection interrupted. Refresh to retry.';}},20000);
  }catch(e){$('save-status').textContent='Could not load shared board. Reload to retry.';toast(e.message);}
 }init();

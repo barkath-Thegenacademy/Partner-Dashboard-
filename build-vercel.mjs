@@ -1,0 +1,13 @@
+import {mkdirSync, readFileSync, writeFileSync, copyFileSync} from 'node:fs';
+mkdirSync('public', {recursive: true});
+const editorUrl = 'https://barkath-partner-tracker-20261111.barkath296986.chatgpt.site/';
+let html = readFileSync('web/index.html', 'utf8');
+html = html.replace(/<script id="partner-data"[\s\S]*?<\/script>/, '');
+html = html.replace('<script src="app.js?v=shared-5"></script>', '<script src="host.js"></script><script src="app.js?v=vercel-1"></script>');
+html = html.replace('Sign in with your TGA ChatGPT account, then choose a partner or click Add partner. Saved changes appear for both Barkath and Sumukh.', 'Open the shared editor to add or update partners using your authorized TGA ChatGPT account. Return here and select Refresh board to see your changes.');
+html = html.replace('Original sheet snapshot · 11 Nov 2026', 'Live shared partner records');
+html = html.replace('<button type="submit" class="primary">Save partner</button>', '<a class="primary" href="'+editorUrl+'" target="_blank" rel="noopener">Open shared editor to update</a>');
+html = html.replace('Select a partner to view contacts and update details.', 'Select a partner to view details. Use the shared editor to update records.');
+writeFileSync('public/index.html', html);
+writeFileSync('public/host.js', 'window.PARTNER_EDITOR_URL = '+JSON.stringify(editorUrl)+';\n');
+for (const file of ['app.js','style.css','tga-logo.png']) copyFileSync('web/'+file, 'public/'+file);
