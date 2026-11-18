@@ -26,4 +26,3 @@ The current deployment uses ChatGPT Sites, Cloudflare D1 (`DB`), and Sites-provi
 This version is not yet Vercel-compatible. A Vercel migration must replace the D1 binding and Sites authentication with persistent storage and verified authentication. Never trust client-supplied identity headers on another hosting platform.
 
 Partner data in `web/data.json` is the original seed; current shared records reside in the hosted database. Export current records before migrating hosts. No live Google Sheets synchronization is configured.
-

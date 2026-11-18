@@ -1,0 +1,10 @@
+from pathlib import Path
+p=Path('dist/app.js')
+s=p.read_text(encoding='utf-8')
+s=s.replace("['search','status','cohort-filter'].forEach(id=>$(id).addEventListener('input',render));", "$('search').addEventListener('input',render);['status','cohort-filter'].forEach(id=>{$(id).addEventListener('change',render);$(id).addEventListener('input',render);});")
+s=s.replace("$('count').textContent=list.length+' partners';", "$('count').textContent=list.length+' partner'+(list.length===1?'':'s');")
+s=s.replace("statuses.includes(p.status))?saved:seed", "statuses.includes(p.status))?saved.map(p=>({...p,cohort:p.cohort===true||['yes','true','✅'].includes(normalize(p.cohort))})):seed")
+p.write_text(s,encoding='utf-8')
+h=Path('dist/index.html')
+t=h.read_text(encoding='utf-8').replace('Search partners, contacts or notes…','Search any partner detail…').replace('Not marked current','Not in current cohort')
+h.write_text(t,encoding='utf-8')
